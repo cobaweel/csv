@@ -118,4 +118,5 @@ printCSV records = unlines (printRecord `map` records)
           printField f = "\"" ++ concatMap escape f ++ "\""
           escape '"' = "\"\""
           escape x = [x]
+          unlines = concat . intersperse "\n"
 
