@@ -69,54 +69,45 @@ module Text.CSV (CSV
 
 import Text.ParserCombinators.Parsec
 import Data.List (intersperse)
+import qualified Text.CSV.Internal as I
 
 -- | A CSV file is a series of records. According to the RFC, the
 -- records all have to have the same length. As an extension, I
 -- allow variable length records.
-type CSV = [Record]
+type CSV = I.SV
+type Record = I.Record
+type Field = I.Field
 
--- | A record is a series of fields
-type Record = [Field]
-
--- | A field is a string
-type Field = String
+comma = ','
 
 -- | A Parsec parser for parsing CSV files
 csv :: Parser CSV
-csv = do x <- record `sepEndBy` many1 (oneOf "\n\r")
-         eof
-         return x
+csv = I.sv comma
 
 record :: Parser Record
-record = (quotedField <|> field) `sepBy` char ','
+record = I.record comma
 
 field :: Parser Field
-field = many (noneOf ",\n\r\"")
+field = I.field comma
 
 quotedField :: Parser Field
-quotedField = between (char '"') (char '"') $
-              many (noneOf "\"" <|> try (string "\"\"" >> return '"'))
+quotedField = I.quotedField
 
 -- | Given a file name (used only for error messages) and a string to
 -- parse, run the parser.
 parseCSV :: FilePath -> String -> Either ParseError CSV
-parseCSV = parse csv
+parseCSV = I.parseSV comma
 
 -- | Given a file name, read from that file and run the parser
 parseCSVFromFile :: FilePath -> IO (Either ParseError CSV)
-parseCSVFromFile = parseFromFile csv
+parseCSVFromFile = I.parseSVFromFile comma
 
 -- | Given a string, run the parser, and print the result on stdout.
 parseCSVTest :: String -> IO ()
-parseCSVTest = parseTest csv
+parseCSVTest = I.parseSVTest comma
 
 -- | Given an object of type CSV, generate a CSV formatted
 -- string. Always uses escaped fields.
 printCSV :: CSV -> String
-printCSV records = unlines (printRecord `map` records)
-    where printRecord = concat . intersperse "," . map printField
-          printField f = "\"" ++ concatMap escape f ++ "\""
-          escape '"' = "\"\""
-          escape x = [x]
-          unlines = concat . intersperse "\n"
+printCSV records = I.printSV comma records
 
