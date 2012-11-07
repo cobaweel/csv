@@ -15,4 +15,4 @@ License-file:        COPYING
 Author:              Jaap Weel <weel@ugcs.caltech.edu>
 Maintainer:          Jaap Weel <weel@ugcs.caltech.edu>
 Build-Depends:       base, parsec, filepath
-Exposed-modules:     Text.CSV Text.TSV
+Exposed-modules:     Text.CSV Text.TSV Text.CSV.Internal
