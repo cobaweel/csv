@@ -57,15 +57,15 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. -}
 
-module Text.CSV (CSV
-                 , Record
-                 , Field
-                 , csv
-                 , parseCSV
-                 , parseCSVFromFile
-                 , parseCSVTest
-                 , printCSV
-                 ) where
+module Text.LenientCSV (CSV
+                       , Record
+                       , Field
+                       , csv
+                       , parseCSV
+                       , parseCSVFromFile
+                       , parseCSVTest
+                       , printCSV
+                       ) where
 
 import Text.ParserCombinators.Parsec
 import Data.List (intersperse)
@@ -88,7 +88,12 @@ csv = do x <- record `sepEndBy` many1 (oneOf "\n\r")
          return x
 
 record :: Parser Record
-record = (quotedField <|> field) `sepBy` char ','
+record = lenientField `sepBy` char ','
+
+-- Allow CSV with embedded quoted portions like:
+--13/05/2013,DEB,'11-22-33,0000000,"BOOK.COM.CO,LTD" TW         3920.00 XR        44.36397 CD 4918 ,88.36
+lenientField :: Parser Field
+lenientField = fmap concat $ (quotedField <|> field) `manyTill` (lookAhead (oneOf "\n\r,"))
 
 field :: Parser Field
 field = many (noneOf ",\n\r\"")

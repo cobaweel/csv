@@ -1,7 +1,7 @@
-Name:                csv
-Version:             0.1.1
+Name:                lenient-csv
+Version:             0.1
 Category:            Text
-Synopsis:            CSV loader and dumper
+Synopsis:            Lenient CSV loader and dumper
 Description:         CSV loader and dumper
         .
         This library parses and dumps documents that are formatted 
@@ -9,10 +9,14 @@ Description:         CSV loader and dumper
         Comma-Separated Values (CSV) Files\". This format is used, among
         many other things, as a lingua franca for spreadsheets, and for
         certain web services.
+        .
+        As an extension, this library also attempts to sensibly interpret
+        some CSV files which would not be acceptable under the standard.
 Copyright:           Jaap Weel, 2007
 License:             MIT
 License-file:        COPYING
-Author:              Jaap Weel <weel@ugcs.caltech.edu>
-Maintainer:          Jaap Weel <weel@ugcs.caltech.edu>
+Author:              Jaap Weel <weel@ugcs.caltech.edu>, Max Bolingbroke <batterseapower@hotmail.com>
+Build-Type:          Simple
+Maintainer:          Max Bolingbroke <batterseapower@hotmail.com>
 Build-Depends:       base, parsec, filepath
-Exposed-modules:     Text.CSV
+Exposed-modules:     Text.LenientCSV
