@@ -67,6 +67,7 @@ module Text.LenientCSV (CSV
                        , printCSV
                        ) where
 
+import Control.Applicative (pure, liftA2)
 import Text.ParserCombinators.Parsec
 import Data.List (intersperse)
 
@@ -93,10 +94,10 @@ record = lenientField `sepBy` char ','
 -- Allow CSV with embedded quoted portions like:
 --13/05/2013,DEB,'11-22-33,0000000,"BOOK.COM.CO,LTD" TW         3920.00 XR        44.36397 CD 4918 ,88.36
 lenientField :: Parser Field
-lenientField = fmap concat $ (quotedField <|> field) `manyTill` (lookAhead (oneOf "\n\r,"))
+lenientField = try (liftA2 (++) (quotedField <|> field) lenientField) <|> pure ""
 
 field :: Parser Field
-field = many (noneOf ",\n\r\"")
+field = many1 (noneOf ",\n\r\"")
 
 quotedField :: Parser Field
 quotedField = between (char '"') (char '"') $
